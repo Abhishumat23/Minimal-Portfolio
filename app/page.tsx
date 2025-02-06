@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, InstagramIcon, Github, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Player } from "@lottiefiles/react-lottie-player";
 
 export default function Portfolio() {
   return (
@@ -84,17 +83,7 @@ export default function Portfolio() {
                 </Link>
               </Button>
             </div>
-          </div>
-
-          {/* Lottie Animation */}
-          <div className="mt-8 lg:block hidden">
-            <Player
-              autoplay
-              loop
-              src="/assets/teaching-animation.json"
-              style={{ height: "350px", width: "100%" }}
-            />
-          </div>
+          </div>          
         </div>
 
         {/* Right Content */}
