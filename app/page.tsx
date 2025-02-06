@@ -2,9 +2,12 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { Menu, InstagramIcon, Github, Linkedin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Player } from '@lottiefiles/react-lottie-player'; // Import the Player component
+
+const LottiePlayer = dynamic(() => import("react-lottie-player"), { ssr: false });
 
 export default function Portfolio() {
 
