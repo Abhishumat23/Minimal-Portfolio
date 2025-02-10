@@ -67,6 +67,12 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
+
+/* Add smooth transitions for color changes */
+* {
+  transition: background-color 0.3s ease, color 0.1s ease, border-color 0.3s ease;
+}
+
