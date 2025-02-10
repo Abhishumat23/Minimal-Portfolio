@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, InstagramIcon, Github, Linkedin, Sun, Moon } from "lucide-react"
+import { InstagramIcon, Github, Linkedin, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function Portfolio() {
@@ -81,7 +81,7 @@ export default function Portfolio() {
         </Link>
       </Button>
     ))}
-    {/* Menu Button and Theme Toggle - Show on all screen sizes */}
+    {/* Theme Toggle - Show on all screen sizes */}
     <div className="flex justify-end items-center gap-4">
             <Button variant="outline" size="icon" onClick={toggleTheme}>
               {theme === "light" ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
