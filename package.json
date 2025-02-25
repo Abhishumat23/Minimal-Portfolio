@@ -15,6 +15,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "devicon": "^2.16.0",
+    "framer-motion": "^12.4.7",
     "lottie-web": "^5.12.2",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
@@ -24,7 +25,8 @@
     "react-lottie": "^1.2.10",
     "react-lottie-player": "^2.1.0",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

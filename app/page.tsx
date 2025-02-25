@@ -3,12 +3,65 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { InstagramIcon, Github, Linkedin, Sun, Moon } from "lucide-react"
+import { InstagramIcon, Github, Linkedin, Sun, Moon, ExternalLink, Star, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion"
+import PreLoader from "@/components/preloader"
+
+// Animation variants
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+}
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const shimmer = {
+  animate: {
+    background: [
+      "linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)",
+      "linear-gradient(to right, transparent 100%, rgba(255,255,255,0.1) 50%, transparent 0%)",
+    ],
+    transition: {
+      duration: 2,
+      repeat: Number.POSITIVE_INFINITY,
+      ease: "linear",
+    },
+  },
+}
 
 export default function Portfolio() {
   const [theme, setTheme] = useState("light")
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Scroll progress animation
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  })
+
+  // Mouse follower effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [])
+
+
+  // Theme toggle
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light"
     setTheme(savedTheme)
@@ -22,229 +75,328 @@ export default function Portfolio() {
     document.documentElement.classList.toggle("dark", newTheme === "dark")
   }
 
+  // Project categories
+  const categories = ["All", "Hide"]
+  const projects = [
+    {
+      image: "/assets/project2.png",
+      title: "HackOff V4.0",
+      description: "A hackathon event platform for registration, submissions, and participant management.",
+      link: "https://hackoff-v4-pi.vercel.app/",
+      category: "web",
+      stats: { stars: 45, users: 1200 },
+    },
+    {
+      image: "/assets/project3.png",
+      title: "DigiSwasth",
+      description: "A virtual hospital platform for patient-doctor interaction and health management.",
+      link: "https://digiswasth-xi.vercel.app/",
+      category: "mobile",
+      stats: { stars: 32, users: 800 },
+    },
+    {
+      image: "/assets/project1.png",
+      title: "Sociovate",
+      description: "A platform for ideathon participation, idea submission, and team collaboration.",
+      link: "https://www.sociovate.co/",
+      category: "web",
+      stats: { stars: 67, users: 2300 },
+    },
+  ]
+
+  const filteredProjects =
+    selectedCategory === "all" ? projects : projects.filter((project) => project.category === selectedCategory)
+
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8">
-        {/* Left Sidebar */}
-        <div className="space-y-8">
-          {/* Profile Header */}
-          <div className="flex items-center gap-4">
-            <Image src="/favicon.ico" alt="Profile" width={70} height={70} className="rounded-full" />
-            <div>
-              <h1 className="text-2xl font-sans font-bold">Abhishumat Singh Beniwal</h1>
-              <p className="text-muted-foreground">Software Engineer</p>
-            </div>
-          </div>
+    <>
+      <AnimatePresence mode="wait">
+        {isLoading && <PreLoader onLoadingComplete={() => setIsLoading(false)} />}
+      </AnimatePresence>
 
-          {/* Bio */}
-          <div className="space-y-6">
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              Passionate about creating innovative solutions and user-friendly applications. With expertise in web
-              technologies and a keen eye for design, I bring ideas to life in the ever-evolving world of software
-              development.
-            </p>
-            <Button className="rounded-full bg-blue-500 text-white hover:bg-blue-600">
-              <Link href="/assets/resume 2.pdf" target="_blank">
-                Resume
-              </Link>
-            </Button>
-          </div>
-
-          {/* Social Links */}
-<div className="space-y-4">
-  <div className="flex gap-4">
-    {[
-      {
-        href: "https://github.com/Abhishumat23",
-        icon: <Github className="w-5 h-5 text-red-500 dark:text-red-400" />,
-        border: "border-red-500",
-      },
-      {
-        href: "https://www.linkedin.com/in/abhishumat-singh-beniwal-200620269/",
-        icon: <Linkedin className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />,
-        border: "border-yellow-500",
-      },
-      {
-        href: "https://www.instagram.com/abhishumatt",
-        icon: <InstagramIcon className="w-5 h-5 text-blue-500 dark:text-blue-400" />,
-        border: "border-blue-500",
-      },
-    ].map((link, index) => (
-      <Button
-        key={index}
-        variant="outline"
-        size="icon"
-        asChild
+      <motion.div
+        className="min-h-screen bg-background text-foreground relative"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoading ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
       >
-        <Link href={link.href} target="_blank">
-          {link.icon}
-        </Link>
-      </Button>
-    ))}
-    {/* Theme Toggle - Show on all screen sizes */}
-    <div className="flex justify-end items-center gap-4">
-            <Button variant="outline" size="icon" onClick={toggleTheme}>
-              {theme === "light" ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
-            </Button>
-          </div>
-  </div>
-            <div className="text-muted-foreground text-sm">
-              <p>© 2025 Abhishumat Singh Beniwal</p>
-              <div className="flex gap-4">
-                <Link href="#" className="hover:text-primary">
-                  Privacy Policy
-                </Link>
-                <Link href="#" className="hover:text-primary">
-                  Terms of Service
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Mouse follower */}
+        <motion.div
+          className="fixed w-6 h-6 rounded-full bg-primary/20 pointer-events-none z-50 hidden md:block"
+          animate={{
+            x: mousePosition.x - 12,
+            y: mousePosition.y - 12,
+            scale: 1,
+          }}
+          transition={{ type: "spring", damping: 30, stiffness: 200 }}
+        />
 
-        {/* Right Content */}
-        <div className="space-y-3">
-          {/* Projects Section */}
-<section>
-  <div className="flex justify-between items-center mb-4">
-    <h2 className="text-2xl font-sans font-bold text-primary">My Projects</h2>
-  </div>
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    {[
-      {
-        image: "/assets/project2.png",
-        title: "HackOff V4.0",
-        description: "A hackathon event platform for registration, submissions, and participant management.",
-        color: "bg-red-100 dark:bg-red-900",
-        border: "border-red-500",
-        link: "https://hackoff-v4-pi.vercel.app/",
-      },
-      {
-        image: "/assets/project3.png",
-        title: "DigiSwasth",
-        description: "A virtual hospital platform for patient-doctor interaction and health management.",
-        color: "bg-yellow-100 dark:bg-yellow-900",
-        border: "border-yellow-500",
-        link: "https://digiswasth-xi.vercel.app/",
-      },
-      {
-        image: "/assets/project1.png",
-        title: "Sociovate",
-        description: "A platform for ideathon participation, idea submission, and team collaboration.",
-        color: "bg-blue-100 dark:bg-blue-900",
-        border: "border-blue-500",
-        link: "https://www.sociovate.co/",
-      },
-    ].map((project, i) => (
-      <a
-        key={i}
-        href={project.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`relative flex flex-col ${project.color} rounded-lg overflow-hidden border-2 ${project.border} transition-transform duration-300 hover:scale-105 hover:shadow-lg p-4`}
-        style={{ height: "320px" }}
-      >
-        {/* Image Container */}
-        <div className="w-full overflow-hidden">
-          <Image
-            src={project.image || "/placeholder.svg"}
-            alt={project.title}
-            layout="responsive"
-            width={300}
-            height={200}
-            className="object-cover rounded-t-lg"
-          />
-        </div>
+        {/* Scroll progress bar */}
+        <motion.div className="fixed top-0 left-0 right-0 h-1 bg-primary z-50" style={{ scaleX }} />
 
-        {/* Text Container */}
-        <div className="flex-grow flex flex-col justify-between text-center mt-2">
-          <h3 className="text-lg font-semibold text-foreground">{project.title}</h3>
-          <p className="text-sm text-muted-foreground">{project.description}</p>
-        </div>
-      </a>
-    ))}
-  </div>
-</section>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          
 
+          <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-12">
+            {/* Left Sidebar */}
+            <motion.div className="space-y-10" initial="initial" animate="animate" variants={staggerContainer}>
+              {/* Profile Header */}
+              <motion.div className="flex items-center gap-6" variants={fadeIn}>
+                <div className="relative">
+                  <Image
+                    src="/favicon.ico"
+                    alt="Profile"
+                    width={90}
+                    height={90}
+                    className="rounded-full ring-2 ring-primary/0"
+                  />
+                  <motion.div className="absolute inset-0 rounded-full" variants={shimmer} animate="animate" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Abhishumat Singh Beniwal</h1>
+                  <p className="text-lg text-muted-foreground">Software Engineer</p>
+                </div>
+              </motion.div>
 
-          {/* Stack Section */}
-          <section className="bg-green-100 dark:bg-green-900 rounded-xl p-6 border-2 border-green-500">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-sans font-bold text-green-700 dark:text-green-300">My Stack</h2>
-            </div>
+              {/* Bio */}
+              <motion.div className="space-y-6" variants={fadeIn}>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  Passionate about creating innovative solutions and user-friendly applications. With expertise in web
+                  technologies and a keen eye for design, I bring ideas to life in the ever-evolving world of software
+                  development.
+                </p>
+                <Button
+                  className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90 transition-colors"
+                  asChild
+                >
+                  <Link href="/assets/abhishumat-1.pdf" target="_blank">
+                    View Resume
+                  </Link>
+                </Button>
+              </motion.div>
 
-            {/* Stack Items */}
-<div className="grid grid-cols-4 sm:flex sm:gap-4 gap-2">
-  {[
-    { src: "/assets/js-squared.svg", alt: "React", color: "bg-blue-500" },
-    { src: "/assets/typescript.svg", alt: "Node.js", color: "bg-green-500" },
-    { src: "/assets/swift.svg", alt: "Tailwind CSS", color: "bg-yellow-500" },
-    { src: "/assets/python.svg", alt: "Firebase", color: "bg-red-500" },
-    { src: "/assets/Tailwind CSS.svg", alt: "React", color: "bg-blue-500" },
-    { src: "/assets/Flutter.svg", alt: "Node.js", color: "bg-green-500" },
-    { src: "/assets/Git.svg", alt: "Tailwind CSS", color: "bg-yellow-500" },
-  ].map((tech, i) => (
-    <div
-      key={i}
-      className={`w-12 h-12 ${tech.color} rounded-xl shadow-md flex items-center justify-center p-2 transition-transform duration-200 hover:scale-110`}
-    >
-      <Image
-        src={tech.src || "/placeholder.svg"}
-        alt={tech.alt}
-        width={32}
-        height={32}
-        className="object-contain"
-      />
+              {/* Experience Timeline */}
+              <motion.div variants={fadeIn} className="space-y-6">
+                <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
+                <div className="space-y-4">
+                  {[
+                    {
+                      year: "2024-2025",
+                      title: "Co-Secretary",
+                      company: "IET-VIT",
+                      description: "Led development of various websites",
+                    },
+                    {
+                      year: "2023",
+                      title: "Projects Domain Member",
+                      company: "Apple Developers Group VIT",
+                      description: "Built responsive web applications",
+                    },
+                    
+                  ].map((experience, index) => (
+                    <motion.div
+                      key={index}
+                      className="relative pl-8 pb-8 border-l border-primary/20 last:pb-0"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <div className="absolute left-0 top-0 w-3 h-3 rounded-full bg-primary -translate-x-[7px]" />
+                      <div className="space-y-2">
+                        <span className="text-sm text-primary font-medium">{experience.year}</span>
+                        <h3 className="font-semibold">{experience.title}</h3>
+                        <p className="text-sm text-muted-foreground">{experience.company}</p>
+                        <p className="text-sm">{experience.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Social Links */}
+              <motion.div className="space-y-6" variants={fadeIn}>
+                <div className="flex gap-4">
+                  {[
+                    {
+                      href: "https://github.com/Abhishumat23",
+                      icon: <Github className="w-5 h-5" />,
+                      label: "GitHub",
+                    },
+                    {
+                      href: "https://www.linkedin.com/in/abhishumat-singh-beniwal-200620269/",
+                      icon: <Linkedin className="w-5 h-5" />,
+                      label: "LinkedIn",
+                    },
+                    {
+                      href: "https://www.instagram.com/abhishumatt",
+                      icon: <InstagramIcon className="w-5 h-5" />,
+                      label: "Instagram",
+                    },
+                  ].map((link, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="icon"
+                      className="rounded-full hover:scale-110 transition-transform"
+                      asChild
+                    >
+                      <Link href={link.href} target="_blank" aria-label={link.label}>
+                        {link.icon}
+                      </Link>
+                    </Button>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={toggleTheme}
+                    className="rounded-full hover:scale-110 transition-transform ml-auto"
+                  >
+                    {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right Content */}
+            <motion.div className="space-y-12" initial="initial" animate="animate" variants={staggerContainer}>
+              {/* Projects Section */}
+              <motion.section variants={fadeIn} id="projects">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-2xl font-bold tracking-tight">Featured Projects</h2>
+                  <div className="flex gap-2">
+                    {categories.map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedCategory(category)}
+                        className="capitalize"
+                      >
+                        {category}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProjects.map((project, i) => (
+                    <motion.a
+                      key={i}
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative flex flex-col bg-card rounded-xl overflow-hidden border shadow-sm hover:shadow-lg transition-all duration-300"
+                      whileHover={{ y: -5 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                    >
+                      <div className="relative aspect-video overflow-hidden">
+                        <Image
+                          src={project.image || "/placeholder.svg"}
+                          alt={project.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <div className="p-6 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                            {project.title}
+                          </h3>
+                          <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">{project.description}</p>
+                        <div className="flex items-center gap-4 pt-2">
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Star className="w-4 h-4" />
+                            <span>{project.stats.stars}</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <Users className="w-4 h-4" />
+                            <span>{project.stats.users}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.a>
+                  ))}
+                </div>
+              </motion.section>
+
+              {/* Stack Section */}
+              <motion.section variants={fadeIn} className="rounded-xl p-8 bg-primary/5 border">
+                <h2 className="text-2xl font-bold tracking-tight mb-8">Tech Stack</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 ">
+                  {[
+                    { src: "/assets/js-squared.svg", alt: "JavaScript", level: 90 },
+                    { src: "/assets/typescript.svg", alt: "TypeScript", level: 85 },
+                    { src: "/assets/swift.svg", alt: "Swift", level: 75 },
+                    { src: "/assets/python.svg", alt: "Python", level: 80 },
+                    { src: "/assets/Tailwind CSS.svg", alt: "Tailwind CSS", level: 95 },
+                    { src: "/assets/Flutter.svg", alt: "Flutter", level: 70 },
+                    { src: "/assets/Git.svg", alt: "Git", level: 88 },
+                  ].map((tech, i) => (
+                    <motion.div
+                      key={i}
+                      className="relative p-6 rounded-xl bg-background shadow-sm border hover:shadow-md transition-shadow"
+                      whileHover={{ scale: 1.05 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: i * 0.1 }}
+                    >
+                      <div className="flex flex-col items-center gap-4">
+                        <Image
+                          src={tech.src || "/placeholder.svg"}
+                          alt={tech.alt}
+                          width={40}
+                          height={40}
+                          className="object-contain dark:invert"
+                        />
+                        <div className="w-full space-y-2">
+                          <div className="text-sm font-medium text-center">{tech.alt}</div>
+                          <div className="h-2 w-full bg-primary/20 rounded-full overflow-hidden">
+                            <motion.div
+                              className="h-full bg-primary"
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${tech.level}%` }}
+                              transition={{ duration: 1, delay: i * 0.1 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.section>
+
+              {/* Contact Section */}
+              <motion.section variants={fadeIn} className="rounded-xl p-8 bg-primary/5 border">
+  <h2 className="text-2xl font-bold tracking-tight mb-6">Get in Touch</h2>
+  <div className="grid md:grid-cols-2 gap-8">
+    <div className="space-y-4">
+      <p className="text-lg">
+        <span className="text-muted-foreground">Email: </span>
+        <a href="mailto:abhishumatbeniwal@gmail.com" className="text-primary hover:underline">
+          abhishumatbeniwal@gmail.com
+        </a>
+      </p>
+      <p className="text-muted-foreground">
+        Feel free to reach out for collaborations or just to say hi!
+      </p>
     </div>
-  ))}
-</div>
-          </section>
 
-          {/* Contact and Clients Sections */}
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-            {/* Contact Section */}
-            <section className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 p-6 border-2 border-blue-300 dark:border-blue-700">
-              <h2 className="text-2xl font-sans font-bold text-blue-700 dark:text-blue-300 mb-4">Contact Me</h2>
-              <p className="text-blue-700 dark:text-blue-300 mb-4">
-                Email:{" "}
-                <a
-                  href="mailto:abhishumatbeniwal@gmail.com"
-                  className="text-blue-800 dark:text-blue-200 hover:underline"
-                >
-                  abhishumatbeniwal@gmail.com
-                </a>
-              </p>
-              <div className="social-icons flex gap-4">
-                <a
-                  href="https://www.linkedin.com/in/abhishumat-singh-beniwal-200620269/"
-                  target="_blank"
-                  className="text-blue-800 dark:text-blue-200 hover:text-blue-900 dark:hover:text-blue-100"
-                  rel="noreferrer"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href="https://github.com/Abhishumat23"
-                  target="_blank"
-                  className="text-blue-800 dark:text-blue-200 hover:text-blue-900 dark:hover:text-blue-100"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://www.instagram.com/abhishumatt"
-                  target="_blank"
-                  className="text-blue-800 dark:text-blue-200 hover:text-blue-900 dark:hover:text-blue-100"
-                  rel="noreferrer"
-                >
-                  Instagram
-                </a>
-              </div>
-            </section>
+   
+  </div>
+</motion.section>
+            </motion.div>
           </div>
+
+          {/* Footer */}
+          <motion.footer variants={fadeIn} className="mt-16 pt-8 border-t text-center text-sm text-muted-foreground">
+            <p>© {new Date().getFullYear()} Abhishumat Singh Beniwal. All rights reserved.</p>
+          </motion.footer>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </>
   )
 }
 
