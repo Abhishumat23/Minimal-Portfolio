@@ -78,7 +78,7 @@ const PreLoader = ({ onLoadingComplete }: { onLoadingComplete: () => void }) => 
             className="space-y-2"
           >
             <span className="text-4xl font-bold text-primary">{progress}%</span>
-            <span className="block text-sm text-muted-foreground">Loading</span>
+            <span className="block text-sm text-muted-foreground">Loading...</span>
           </motion.div>
         </div>
       </div>
