@@ -84,7 +84,7 @@ export default function Portfolio() {
       description: "A hackathon event platform for registration, submissions, and participant management.",
       link: "https://hackoff-v4-pi.vercel.app/",
       category: "web",
-      stats: { stars: 45, users: 1200 },
+      stats: { stars: 45, users: 200 },
     },
     {
       image: "/assets/project3.png",
@@ -92,7 +92,7 @@ export default function Portfolio() {
       description: "A virtual hospital platform for patient-doctor interaction and health management.",
       link: "https://digiswasth-xi.vercel.app/",
       category: "mobile",
-      stats: { stars: 32, users: 800 },
+      stats: { stars: 12, users: 80 },
     },
     {
       image: "/assets/project1.png",
@@ -100,7 +100,7 @@ export default function Portfolio() {
       description: "A platform for ideathon participation, idea submission, and team collaboration.",
       link: "https://www.sociovate.co/",
       category: "web",
-      stats: { stars: 67, users: 2300 },
+      stats: { stars: 60, users: 100 },
     },
   ]
 
