@@ -168,7 +168,7 @@ export default function Portfolio() {
                   className="rounded-full text-base px-8 py-6 bg-primary hover:bg-primary/90 transition-colors"
                   asChild
                 >
-                  <Link href="/assets/abhishumat-1.pdf" target="_blank">
+                  <Link href="/assets/Resume-Abhishumat.pdf" target="_blank">
                     View Resume
                   </Link>
                 </Button>
