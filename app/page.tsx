@@ -98,7 +98,7 @@ export default function Portfolio() {
       image: "/assets/project1.png",
       title: "Sociovate",
       description: "A platform for ideathon participation, idea submission, and team collaboration.",
-      link: "https://www.sociovate.co/",
+      link: "https://sociovate-frontend.vercel.app/",
       category: "All",
       stats: { stars: 60, users: 100 },
     },
@@ -178,37 +178,57 @@ export default function Portfolio() {
               <motion.div variants={fadeIn} className="space-y-6">
                 <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
                 <div className="space-y-4">
-                  {[
-                    {
-                      year: "2024-2025",
-                      title: "Co-Secretary",
-                      company: "IET-VIT",
-                      description: "Led development of various websites",
-                    },
-                    {
-                      year: "2023",
-                      title: "Projects Domain Member",
-                      company: "Apple Developers Group VIT",
-                      description: "Built responsive web applications",
-                    },
-                    
-                  ].map((experience, index) => (
-                    <motion.div
-                      key={index}
-                      className="relative pl-8 pb-8 border-l border-primary/20 last:pb-0"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                      <div className="absolute left-0 top-0 w-3 h-3 rounded-full bg-primary -translate-x-[7px]" />
-                      <div className="space-y-2">
-                        <span className="text-sm text-primary font-medium">{experience.year}</span>
-                        <h3 className="font-semibold">{experience.title}</h3>
-                        <p className="text-sm text-muted-foreground">{experience.company}</p>
-                        <p className="text-sm">{experience.description}</p>
-                      </div>
-                    </motion.div>
-                  ))}
+                {[
+                {
+                  year: "June 2025",
+                  title: "Intern",
+                  company: "MPC Cloud Consulting Pvt. Ltd",
+                  link: "https://www.mpccloudconsulting.com",
+                  description: "Worked on Oracle Cloud Infrastructure development",
+                },
+                {
+                  year: "2024-2025",
+                  title: "Co-Secretary",
+                  company: "IET-VIT",
+                  description: "Led development of various websites",
+                },
+                {
+                  year: "2023-2024",
+                  title: "Projects Domain Member",
+                  company: "Apple Developers Group VIT",
+                  description: "Built responsive web applications",
+                },
+              ].map((experience, index) => (
+                <motion.div
+                  key={index}
+                  className="relative pl-8 pb-8 border-l border-primary/20 last:pb-0"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <div className="absolute left-0 top-0 w-3 h-3 rounded-full bg-primary -translate-x-[7px]" />
+                  <div className="space-y-2">
+                    <span className="text-sm text-primary font-medium">{experience.year}</span>
+                    <h3 className="font-semibold">{experience.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {experience.link ? (
+                        <a
+                          href={experience.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline hover:text-primary"
+                        >
+                          {experience.company}
+                        </a>
+                      ) : (
+                        <span className="text-white">{experience.company}</span>
+                      )}
+                    </p>
+                    <p className="text-sm">{experience.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+
                 </div>
               </motion.div>
 
